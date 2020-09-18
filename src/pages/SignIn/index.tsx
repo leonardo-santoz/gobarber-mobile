@@ -19,6 +19,8 @@ import Button from '../../components/Button';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
+import { useAuth } from '../../hooks/auth';
+
 import logoImg from '../../assets/logo.png';
 
 import {
@@ -38,10 +40,14 @@ interface SignInFormData {
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
+
   const navigation = useNavigation()
+
+  const { signIn, user } = useAuth();
 
   const handleSignIn = useCallback(
     async (data: SignInFormData) => {
+      console.log(data)
       try {
         formRef.current?.setErrors({});
         const schema = Yup.object().shape({
@@ -55,12 +61,11 @@ const SignIn: React.FC = () => {
           abortEarly: false,
         });
 
-        // await signIn({
-        //   email: data.email,
-        //   password: data.password,
-        // });
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
 
-        // history.push('/dashboard');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -71,10 +76,10 @@ const SignIn: React.FC = () => {
         }
 
         Alert.alert('Erro na autenticação',
-          'Ocorreu um erro ao fazer login, cheque as credenciais.'
+          'Ocorreu um erro ao fazer login, cheque suas credenciais.'
         );
       }
-    }, []);
+    }, [signIn]);
 
   return (
     <>
